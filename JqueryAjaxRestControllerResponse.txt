@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.15.5/css/ui.jqgrid.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.15.5/jquery.jqgrid.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    $("button").click(function(){
+    	$.ajax(
+    			{
+    			url: "/spring-boot-web-jsp/amol", 
+    		    success: function(data, textStatus, request){
+    		        alert(request.getResponseHeader('myHeader'));
+    		    }
+    			,
+    	         error: function (jqXHR,error, errorThrown){ 
+	               alert('error');
+	               alert(jqXHR.status); // 404 
+	               alert(jqXHR.responseText); // Incorrect Value is body
+	               alert(jqXHR.getResponseHeader('myHeader'));
+         	        //alert(jqXHR.responseText); 
+                                                            }  
+    	       });
+    });
+});
+</script>
+</head>
+<body>
+Welcome jsp page
+
+<div id="div1"><h2>Let jQuery AJAX Change This Text</h2></div>
+
+<button>Get External Content</button>
+
+</body>
+</html>
+
+/************** Rest Controller ************************/
+package com.mkyong;
+
+import java.util.Date;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.model.Employee;
+
+@RestController
+public class RestControllerApi 
+{
+    @GetMapping("/amol")
+	public ResponseEntity<?> getData()
+	{
+    	System.out.println("in get data rest controller");
+    	//return ResponseEntity.ok().header("myHeader", "my header value").header("second header", "headerValues").body(new Employee(1,"amol",new Date()));
+    	return ResponseEntity.badRequest().header("myHeader", "my header value").header("second header", "headerValues").body("Incorrect Value");
+	}
+	
+}
+

@@ -1,0 +1,49 @@
+
+The idiomatic way would be to use an exception handler instead of catching the exception in your regular request handling method. The type of exception determines the response code. (403 for security error, 500 for unexpected platform exceptions, whatever you like)
+
+@ExceptionHandler(MyApplicationException.class)
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public String handleAppException(MyApplicationException ex) {
+  return ex.getMessage();
+}
+
+@ExceptionHandler(Exception.class)
+@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+public String handleAppException(Exception ex) {
+  return ex.getMessage();
+}
+
+*********************************
+
+return status code
+
+@RequestMapping(value = "/matches/{matchId}", produces = "application/json")
+@ResponseBody
+public String match(@PathVariable String matchId) {
+    String json = matchService.getMatchJson(matchId);
+    if (json == null) {
+        // TODO: how to respond with e.g. 400 "bad request"?
+    }
+    return json;
+}
+
+return error status code -->   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+
+return ok status with body --> return ResponseEntity.ok(json); 
+
+it will be 'ResponseEntity<YourClass>' return object 
+Using this approach you don't need @ResponseBody annotation any more
+
+****************************
+
+@RequestMapping(value = "/matches/{matchId}", produces = "application/json")
+@ResponseBody
+public String match(@PathVariable String matchId, @RequestBody String body,
+            HttpServletRequest request, HttpServletResponse response) {
+    String json = matchService.getMatchJson(matchId);
+    if (json == null) {
+        response.setStatus( HttpServletResponse.SC_BAD_REQUEST  );
+    }
+    return json;
+}
+could be further simplified by removing the unused body and request params
